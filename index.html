@@ -1,0 +1,143 @@
+<?php
+session_start();
+$conn = mysqli_connect("localhost","root","","school_db");
+
+if(isset($_POST['login'])){
+    $u = $_POST['username'];
+    $p = $_POST['password'];
+    $r = $_POST['role'];
+
+    $q = "SELECT * FROM users WHERE username='$u' AND password='$p' AND role='$r'";
+    $res = mysqli_query($conn,$q);
+
+    if(mysqli_num_rows($res)==1){
+        $_SESSION['role']=$r;
+    }else{
+        $error="Wrong Login Details";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shravasti Public University</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#e6f0ff;
+}
+.header{
+    background:#003366;
+    color:white;
+    padding:15px;
+    text-align:center;
+}
+.container{
+    display:flex;
+}
+.left{
+    width:25%;
+    background:#002244;
+    color:white;
+    height:100vh;
+    padding:20px;
+}
+.left input,select,button{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+}
+button{
+    background:#0066cc;
+    border:none;
+    color:white;
+    cursor:pointer;
+}
+.right{
+    width:75%;
+    padding:30px;
+}
+.box{
+    background:white;
+    padding:20px;
+    border-radius:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>Shravasti Public University</h1>
+</div>
+
+<div class="container">
+
+<!-- LEFT LOGIN -->
+<div class="left">
+<h3>Login Panel</h3>
+
+<?php if(!isset($_SESSION['role'])){ ?>
+<form method="POST">
+<input type="text" name="username" placeholder="Username" required>
+<input type="password" name="password" placeholder="Password" required>
+
+<select name="role">
+<option value="teacher">Teacher</option>
+<option value="student">Student</option>
+</select>
+
+<button name="login">Login</button>
+</form>
+
+<?php if(isset($error)) echo $error; ?>
+
+<?php } else { ?>
+<p>Login Successful</p>
+<a href="logout.php" style="color:white;">Logout</a>
+<?php } ?>
+
+</div>
+
+<!-- RIGHT CONTENT -->
+<div class="right">
+
+<?php
+if(isset($_SESSION['role']) && $_SESSION['role']=="teacher"){
+?>
+<div class="box">
+<h2>👨‍🏫 Teacher Dashboard</h2>
+<ul>
+<li>Upload Notices</li>
+<li>Upload Marks</li>
+<li>Manage Attendance</li>
+</ul>
+</div>
+
+<?php
+}elseif(isset($_SESSION['role']) && $_SESSION['role']=="student"){
+?>
+<div class="box">
+<h2>🎓 Student Dashboard</h2>
+<ul>
+<li>View Marks</li>
+<li>View Notices</li>
+<li>Profile</li>
+</ul>
+</div>
+
+<?php } else { ?>
+<div class="box">
+<h2>Welcome</h2>
+<p>Admissions | Courses | Faculty | Results</p>
+</div>
+<?php } ?>
+
+</div>
+</div>
+
+</body>
+</html>
